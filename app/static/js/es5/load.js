@@ -15,6 +15,9 @@ Game.Load.prototype = {
     this.load.image('zapperOFF', 'img/zapperOFF.png');
     this.load.image('zapperSpinner2', 'img/zapperSpinner2.png');
     this.load.atlasJSONHash('moth', 'img/moth_animation.png', 'img/moth_animation.json');
+    this.load.atlasJSONHash('bugzap', 'img/zapFlash.png', 'img/zapFlash.json');
+
+    // this.load.image('zapFlash', 'img/zapFlash.png');
 
   },
 
