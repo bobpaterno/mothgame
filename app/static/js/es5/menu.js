@@ -18,7 +18,6 @@ Game.Menu.prototype = {
     this.time.events.add(Phaser.Timer.SECOND * 2, this.doSomething, this);
     this.time.events.add(Phaser.Timer.SECOND * 4, this.doSomethingElse, this);
 
-
   },
 
   update: function() {
