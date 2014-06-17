@@ -1,29 +1,37 @@
-/* global Game, game */
+/* global Game, game, Phaser */
 'use strict';
 
 Game.Load = function() {
   this.game = game;
+  this.isReady = false;
 };
 
 Game.Load.prototype = {
+
   preload: function () {
-  	// create loading screen
-  	this.stage.backgroundColor = '#229';
-
-  	var bar = this.add.sprite(200, 145, 'loadbar');
-  	bar.x -= this.game.world.width/2 / 2 - 5;
-  	bar.anchor.setTo(0, 0.5);
-
-  	this.load.setPreloadSprite(bar);
-
   	// load everything
-  	this.load.image('square-green', 'img/square-green.png');
+    this.load.image('glow', 'img/glow.png');
+    this.load.image('zapperON', 'img/zapper.png');
+    this.load.image('zapperOFF', 'img/zapperOFF.png');
+    this.load.image('zapperSpinner2', 'img/zapperSpinner2.png');
+    this.load.atlasJSONHash('moth', 'img/moth_animation.png', 'img/moth_animation.json');
 
   },
 
   create: function () {
-    game.add.sprite(300,300,'square-green');
-    
-    game.state.start('test1');
+    this.add.sprite(0,0, 'background');
+    this.add.sprite(0,0, 'splash');
+    this.time.events.add(Phaser.Timer.SECOND * 2, this.setReady, this);
+  },
+
+  setReady: function() {
+    this.isReady = true;
+  },
+
+  update: function() {
+    if(this.isReady) {
+      game.state.start('menu');
+    }
   }
+
 };

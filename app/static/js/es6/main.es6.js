@@ -10,12 +10,12 @@ var game;
   function init(){
     game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
-    game.state.add('Boot', Game.Boot);
-    game.state.add('Load', Game.Load);
-    game.state.add('test1', Game.Test1);
-    game.state.add('test2', Game.Test2);
+    game.state.add('boot', Game.Boot);
+    game.state.add('load', Game.Load);
+    game.state.add('menu', Game.Menu);
+    game.state.add('play', Game.Play);
 
-    game.state.start('Boot');
+    game.state.start('boot');
   }
 
 })();

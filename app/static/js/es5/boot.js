@@ -10,10 +10,11 @@ Game.Boot = function() {
 Game.Boot.prototype = {
   preload: function () {
     this.game.input.maxPointers = 1;
-  	this.game.load.image('loadbar', 'img/loadbar.png');
+  	this.load.image('background', 'img/background.png');
+    this.load.image('splash', 'img/splash.png');
   },
 
   create: function () {
-    this.game.state.start('Load');
+    this.game.state.start('load');
   }
 };
