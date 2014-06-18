@@ -7,10 +7,15 @@ Game.Play = function() {
 
 Game.Play.prototype = {
   preload: function () {
-    this.game.load.image('arrow', 'img/keys-arrows.png');
+
   },
 
   create: function () {
-    this.add.sprite(500,300,'arrow');
+    this.add.image(0,0,'background');
+    this.zapperOff = this.add.sprite(350,0,'zapperOFF');
+    this.lighting = this.add.group();
+    this.lighting.create(0,0,'glow');
+    this.lighting.create(350,0,'zapperON');
+    this.lighting.setAll('alpha',0);
   }
 };
