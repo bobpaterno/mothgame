@@ -13,7 +13,7 @@ Game.Load.prototype = {
     this.load.image('glow', 'img/glow.png');
     this.load.image('zapperON', 'img/zapper.png');
     this.load.image('zapperOFF', 'img/zapperOFF.png');
-    this.load.image('zapperSpinner2', 'img/zapperSpinner2.png');
+    this.load.image('zapperSpinner', 'img/zapperSpinner2.png');
     this.load.image('instructions', 'img/instructions.png');
 
     this.load.atlasJSONHash('moth', 'img/moth_animation.png', 'img/moth_animation.json');
