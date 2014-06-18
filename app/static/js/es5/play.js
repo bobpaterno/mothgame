@@ -6,6 +6,11 @@ Game.Play = function() {
    this.MAX_VELOCITY_X = 150;
    this.MAX_VELOCITY_Y = 250;
    this.ACCELERATION = 1500;
+   this.zapperPull = 1;  // 1 means none, 0 means you can't move: one when zapper light is off
+   this.escapeStrength = 45;
+   this.zapperStrength = 500;
+   this.zapperGravityX = 0;
+   this.zapperGravityY= 50;
 };
 
 Game.Play.prototype = {
@@ -25,7 +30,7 @@ Game.Play.prototype = {
     this.zapperOff = this.add.sprite(350,0,'zapperOFF');
     this.lighting = this.add.group();
     this.lighting.create(0,0,'glow');
-    this.lighting.create(350,0,'zapperON');
+    this.zapper = this.lighting.create(350,0,'zapperON');
     this.lighting.setAll('visible',false);
 
     // Render moth
@@ -42,23 +47,29 @@ Game.Play.prototype = {
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    this.time.events.loop(Phaser.Timer.SECOND*5, this.toggleZapper, this);
+
   },
 
   update: function () {
-    this.mothSetMovement();
+
+    this.setZapperPull();
+    this.setMothMovement();
     if(this.isZapperOn) { // zapper is ON
       this.rotateHypno();
     }
+
+
   },
 
-  mothSetMovement: function() {
+  setMothMovement: function() {
     if(this.cursors.left.isDown) {
-      this.moth.body.acceleration.x = -this.ACCELERATION;
       this.moth.animations.play('mothleft');
+      this.moth.body.acceleration.x = -this.ACCELERATION * this.zapperPull;
     }
     else if(this.cursors.right.isDown) {
-      this.moth.body.acceleration.x = this.ACCELERATION;
       this.moth.animations.play('mothright');
+      this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
     }
     else if(this.cursors.up.isDown) {
       this.setUpwardsAcceleration();
@@ -67,10 +78,10 @@ Game.Play.prototype = {
       this.setDownwardsAcceleration();
     }
     else {
-      this.moth.body.acceleration.x = 0;
+      this.moth.body.acceleration.x = this.zapperGravityX;
       this.moth.body.acceleration.y = 10;
+      this.moth.body.gravity.y = this.zapperGravityY;
     }
-
 
   },
 
@@ -92,10 +103,66 @@ Game.Play.prototype = {
     }
   },
 
+  turnZapperOn: function() {
+    this.isZapperOn = true;
+    this.moth.body.drag.setTo(300,0);
+
+  },
+
+  turnZapperOff: function() {
+    this.isZapperOn = false;
+    this.moth.body.drag.setTo(100,0);
+
+  },
+
+  toggleZapper: function () {
+    this.isZapperOn = !this.isZapperOn;
+    console.log(this.isZapperOn);
+  },
+
+  setZapperPull: function () {  // sets zapperPull and zapperGravity-X&Y values
+    if(this.isZapperOn) {
+      var RADIUS = 500;
+      var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
+      dist = dist < 70 ? this.escapeStrength : dist;  // don't want it to be zero
+      this.zapperPull = dist > RADIUS ? 1 : dist/RADIUS/2;
+      var newGravity = (this.zapperStrength - this.zapperStrength*this.zapperPull);
+
+      this.zapperGravityY = -newGravity;
+
+      if(this.moth.body.x < (this.world.width / 2)-50) {
+        this.zapperGravityX = newGravity;
+      }
+      else if(this.moth.body.x > this.world.width / 2) {
+        this.zapperGravityX = -newGravity;
+      }
+      else {
+        this.zapperGravityX = 0;
+      }
+      var pullStrength = Math.sin(0.005*dist/RADIUS*314); // farther away, less pull from zapper
+      this.moth.body.maxVelocity.setTo(pullStrength*this.MAX_VELOCITY_X, pullStrength*this.MAX_VELOCITY_Y);
+    }
+    else {
+      this.zapperPull = 1;
+      this.zapperGravityY = 50;
+      this.zapperGravityX = 0;
+      this.moth.body.maxVelocity.setTo(this.MAX_VELOCITY_X, this.MAX_VELOCITY_Y);
+    }
+
+  },
+
   rotateHypno: function () {
     if(this.hypno.visible) {
       this.hypno.rotation += 0.01;
     }
-  }
+  },
+
+  render: function() {
+
+    game.debug.text('test', 32, 32);
+    game.debug.spriteInfo(this.moth, 32, 100);
+
+
+}
 
 };
