@@ -11,6 +11,6 @@ Game.Play.prototype = {
   },
 
   create: function () {
-    game.add.sprite(500,300,'arrow');
+    this.add.sprite(500,300,'arrow');
   }
 };
