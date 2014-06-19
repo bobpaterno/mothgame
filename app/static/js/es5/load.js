@@ -15,6 +15,9 @@ Game.Load.prototype = {
     this.load.image('zapperOFF', 'img/zapperOFF.png');
     this.load.image('zapperSpinner', 'img/zapperSpinner2.png');
     this.load.image('instructions', 'img/instructions.png');
+    this.load.image('rugBad', 'img/rugBAD.png');
+    this.load.image('rugGood', 'img/rugGOOD.png');
+
 
     this.load.atlasJSONHash('moth', 'img/moth_animation.png', 'img/moth_animation.json');
     this.load.atlasJSONHash('bugzap', 'img/zapFlash.png', 'img/zapFlash.json');
