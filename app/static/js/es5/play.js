@@ -1,5 +1,6 @@
-/* global game, Game, Phaser */
+/* global game, Game, Phaser, Food */
 'use strict';
+
 
 Game.Play = function() {
    this.game = game;
@@ -22,6 +23,7 @@ Game.Play.prototype = {
 
 
   create: function () {
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
     // Render background and zapper
     this.add.image(0,0,'background');
@@ -36,16 +38,14 @@ Game.Play.prototype = {
 
 
     // Render some items
-    var obj = this.randXY(650,500);
-    this.rugG = this.game.add.sprite(obj.x,obj.y,'rugGood');
-    this.rugB = this.game.add.sprite(obj.x,obj.y,'rugGood');
-    this.rugG.visible = true;
-    this.rugB.visible = false;
+    this.rugG = this.renderFood();
 
 
     // Render moth
     this.moth = this.game.add.sprite(200,300,'moth');
     this.game.physics.enable(this.moth, Phaser.Physics.ARCADE);
+    this.game.physics.arcade.enableBody(this.moth);
+
     this.moth.body.gravity.y = 30;
     this.moth.body.collideWorldBounds = true;
     this.moth.body.maxVelocity.setTo(this.MAX_VELOCITY_X, this.MAX_VELOCITY_Y);
@@ -55,12 +55,14 @@ Game.Play.prototype = {
     this.moth.animations.play('mothright');
 
 
-
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.moth.willpower = 23;
-    this.time.events.loop(Phaser.Timer.SECOND*5, this.toggleZapper, this);
+    this.time.events.loop(Phaser.Timer.SECOND*9, this.toggleZapper, this);
+    this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*3, this.rugTimerHandler, this);
+
+
 
     var style = { font: '18px Arial', fill: '#ff0044', align: 'center' };
     this.text = this.add.text(60, 20, 'Willpower: '+this.moth.willpower, style);
@@ -70,6 +72,8 @@ Game.Play.prototype = {
 
 
   update: function () {
+
+    this.game.physics.arcade.collide(this.moth,this.rugG, this.rugG.eatFood, this.ok2Eat);
 
     this.setZapperPull();
     this.setMothMovement();
@@ -207,12 +211,32 @@ Game.Play.prototype = {
 
   },
 
+  renderFood: function() {
+    var obj = this.randXY(650,500);
+    var rugG = new Food(this.game, obj.x, obj.y, 'rugGood');
+    this.game.add.existing(rugG);
+    return rugG;
+
+  },
+
+
+  rugTimerHandler: function() {
+    this.rugG.destroy();
+    this.rugG = this.renderFood();
+
+  },
+
+
+  ok2Eat: function() {
+    // var dist = this.physics.arcade.distanceBetween(this.moth, this.rugG);
+    console.log('hi');
+    // return (dist < 30 ? true : false);
+  },
 
   rotateHypno: function () {
     if(this.hypno.visible) {
       this.hypno.rotation += 0.005;
     }
   }
-
 
 };
