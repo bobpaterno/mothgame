@@ -3,6 +3,7 @@
 
 
 Game.Play = function() {
+  window.play = this;
    this.game = game;
    this.MAX_VELOCITY_X = 150;
    this.MAX_VELOCITY_Y = 200;
@@ -14,6 +15,7 @@ Game.Play = function() {
    this.zapperStrength = 500;
    this.zapperGravityX = 0;
    this.zapperGravityY= 50;
+   this.pullStrength = 0.0001;
 };
 
 Game.Play.prototype = {
@@ -50,30 +52,41 @@ Game.Play.prototype = {
     this.moth.body.collideWorldBounds = true;
     this.moth.body.maxVelocity.setTo(this.MAX_VELOCITY_X, this.MAX_VELOCITY_Y);
     this.moth.body.drag.setTo(100,0);
+    // this.moth.anchor.setTo(0.5,0.5);
     this.moth.animations.add('mothleft', ['mothL1.png', 'mothL2.png', 'mothL3.png', 'mothL2.png'], 20, true, false);
     this.moth.animations.add('mothright', ['mothR5.png', 'mothR6.png'], 10, true, false);
     this.moth.animations.play('mothright');
+
+    this.emitter = game.add.emitter(0, 0, 10);
+    this.emitter.makeParticles('rugPiece');
+    this.emitter.gravity = 200;
 
 
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.moth.willpower = 23;
-    this.time.events.loop(Phaser.Timer.SECOND*9, this.toggleZapper, this);
-    this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*3, this.rugTimerHandler, this);
+    this.moth.isEating = false;
 
+    this.time.events.loop(Phaser.Timer.SECOND*20, this.toggleZapper, this);
+    this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*15, this.rugTimerHandler, this);
 
 
     var style = { font: '18px Arial', fill: '#ff0044', align: 'center' };
     this.text = this.add.text(60, 20, 'Willpower: '+this.moth.willpower, style);
 
     this.text.anchor.set(0.5);
+
   },
 
 
   update: function () {
+    this.moth.bringToTop();
+    this.checkIfEating();
+    this.text.setText('Willpower: '+this.moth.willpower);
 
-    this.game.physics.arcade.collide(this.moth,this.rugG, this.rugG.eatFood, this.ok2Eat);
+
+    this.game.physics.arcade.overlap(this.moth,this.rugG, this.rugG.eatFood, this.ok2Eat);
 
     this.setZapperPull();
     this.setMothMovement();
@@ -118,11 +131,12 @@ Game.Play.prototype = {
 
 
   setDownwardsAcceleration: function () {
-    if(this.moth.body.acceleration.y < 0) {
-      this.moth.body.acceleration.y = 100;
+    this.moth.body.acceleration.y = Math.round(90*(1-this.pullStrength));
+    if(this.isZapperOn) {
+      this.moth.body.gravity.y = -1* Math.round((this.moth.body.acceleration.y)*this.pullStrength);
     }
     else {
-      this.moth.body.acceleration.y = 60;
+      this.moth.body.gravity.y = this.zapperGravityY;
     }
   },
 
@@ -192,10 +206,12 @@ Game.Play.prototype = {
     }
     else {
       this.zapperPull = 1;
+      this.pullStrength = 0;
     }
     this.setZapperGravity();
 
   },
+
 
   randXY: function(w,h) { // checks that it isn't an xy pair on bug zapper
     var x = w * Math.random();
@@ -227,11 +243,30 @@ Game.Play.prototype = {
   },
 
 
-  ok2Eat: function() {
-    // var dist = this.physics.arcade.distanceBetween(this.moth, this.rugG);
-    console.log('hi');
-    // return (dist < 30 ? true : false);
+  ok2Eat: function(moth,rug) {
+    var dist = Math.floor(window.play.physics.arcade.distanceBetween(moth,rug));
+    return (dist < 35 ? true : false);
   },
+
+
+  checkIfEating: function() {
+    if(this.moth.isEating) {
+      this.moth.isEating = false;
+      this.emitter.on = true;
+      this.emitter.x = this.moth.body.x +48;
+      this.emitter.y = this.moth.body.y +10;
+      this.emitter.start(true, 2000, 20,100);
+
+    }
+    else {
+      console.log('not eating');
+
+      this.emitter.on = false;
+    }
+
+  },
+
+
 
   rotateHypno: function () {
     if(this.hypno.visible) {

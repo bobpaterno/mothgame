@@ -17,6 +17,7 @@ Game.Load.prototype = {
     this.load.image('instructions', 'img/instructions.png');
     this.load.image('rugBad', 'img/rugBAD.png');
     this.load.image('rugGood', 'img/rugGOOD.png');
+    this.load.image('rugPiece', 'img/rugPiece.png');
 
 
     this.load.atlasJSONHash('moth', 'img/moth_animation.png', 'img/moth_animation.json');
