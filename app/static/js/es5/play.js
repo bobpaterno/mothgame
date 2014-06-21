@@ -40,8 +40,10 @@ Game.Play.prototype = {
 
 
     // Render some items
-    this.rugG = this.renderFood();
-
+    this.rugB = this.renderFood('rugBad');
+    this.rugG = this.renderFood('rugGood');
+    this.rugB.x = this.rugG.x;
+    this.rugB.y = this.rugG.y;
 
     // Render moth
     this.moth = this.game.add.sprite(200,300,'moth');
@@ -52,7 +54,6 @@ Game.Play.prototype = {
     this.moth.body.collideWorldBounds = true;
     this.moth.body.maxVelocity.setTo(this.MAX_VELOCITY_X, this.MAX_VELOCITY_Y);
     this.moth.body.drag.setTo(100,0);
-    // this.moth.anchor.setTo(0.5,0.5);
     this.moth.animations.add('mothleft', ['mothL1.png', 'mothL2.png', 'mothL3.png', 'mothL2.png'], 20, true, false);
     this.moth.animations.add('mothright', ['mothR5.png', 'mothR6.png'], 10, true, false);
     this.moth.animations.play('mothright');
@@ -69,7 +70,7 @@ Game.Play.prototype = {
     this.moth.isEating = false;
 
     this.time.events.loop(Phaser.Timer.SECOND*20, this.toggleZapper, this);
-    this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*15, this.rugTimerHandler, this);
+    this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*14, this.rugTimerHandler, this);
 
 
     var style = { font: '18px Arial', fill: '#ff0044', align: 'center' };
@@ -81,10 +82,15 @@ Game.Play.prototype = {
 
 
   update: function () {
-    this.moth.bringToTop();
-    this.checkIfEating();
+    console.log(this.rugG.health);
     this.text.setText('Willpower: '+this.moth.willpower);
 
+    this.moth.bringToTop();
+    this.checkIfEating();
+    if(!this.rugG.health) {
+      console.log('here');
+      this.rugB.visible = true;
+    }
 
     this.game.physics.arcade.overlap(this.moth,this.rugG, this.rugG.eatFood, this.ok2Eat);
 
@@ -216,29 +222,30 @@ Game.Play.prototype = {
   randXY: function(w,h) { // checks that it isn't an xy pair on bug zapper
     var x = w * Math.random();
     var y = h * Math.random();
+
     while( (x>=this.zapper.x && x<=this.zapper.x+this.zapper.width) ) {
       x = w * Math.random();
     }
     while( (y>=this.zapper.y && y<=this.zapper.y+this.zapper.height) ) {
       y = h * Math.random();
     }
-
     return {x:Math.floor(x), y:Math.floor(y)};
 
   },
 
-  renderFood: function() {
+  renderFood: function(name) {
     var obj = this.randXY(650,500);
-    var rugG = new Food(this.game, obj.x, obj.y, 'rugGood');
-    this.game.add.existing(rugG);
-    return rugG;
+    var rug = new Food(this.game, obj.x, obj.y, name);
+    this.game.add.existing(rug);
+    return rug;
 
   },
 
 
   rugTimerHandler: function() {
-    this.rugG.destroy();
-    this.rugG = this.renderFood();
+    var obj = this.randXY(650,500);
+    this.rugB.resetFood(obj.x, obj.y);
+    this.rugG.resetFood(obj.x, obj.y);
 
   },
 
@@ -256,16 +263,12 @@ Game.Play.prototype = {
       this.emitter.x = this.moth.body.x +48;
       this.emitter.y = this.moth.body.y +10;
       this.emitter.start(true, 2000, 20,100);
-
     }
     else {
-      console.log('not eating');
-
       this.emitter.on = false;
     }
 
   },
-
 
 
   rotateHypno: function () {
