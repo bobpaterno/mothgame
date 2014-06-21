@@ -23,7 +23,7 @@ Game.Load.prototype = {
     this.load.atlasJSONHash('moth', 'img/moth_animations.png', 'img/moth_animations.json');
     this.load.atlasJSONHash('bugzap', 'img/zapFlash.png', 'img/zapFlash.json');
 
-
+    this.load.audio('aud_mothPretty', 'audios/pretty.mp3');
   },
 
   create: function () {

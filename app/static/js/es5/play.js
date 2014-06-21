@@ -89,6 +89,9 @@ Game.Play.prototype = {
     this.txtWillpower.anchor.set(0);
     this.txtRugsEaten.anchor.set(0);
 
+    this.mothPretty = this.game.add.sound('aud_mothPretty');
+    this.mothPretty.volume = 0.5;
+
   },
 
 
@@ -117,6 +120,9 @@ Game.Play.prototype = {
 
   setMothMovement: function() {
     if(this.isZapperOn && this.moth.willpower === 0) {
+      if(!this.mothPretty.isPlaying) {
+        this.mothPretty.play();
+      }
       if(this.moth.body.x < (this.world.width / 2)-50) { //
         this.moth.animations.play('mothloveR');
         this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
