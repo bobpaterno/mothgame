@@ -14,6 +14,8 @@ var game;
     game.state.add('load', Game.Load);
     game.state.add('menu', Game.Menu);
     game.state.add('play', Game.Play);
+    game.state.add('killmoth', Game.Killmoth);
+
 
     game.state.start('boot');
   }

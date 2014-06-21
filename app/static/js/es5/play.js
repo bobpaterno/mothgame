@@ -56,6 +56,11 @@ Game.Play.prototype = {
     this.moth.body.drag.setTo(100,0);
     this.moth.animations.add('mothleft', ['mothL1.png', 'mothL2.png', 'mothL3.png', 'mothL2.png'], 20, true, false);
     this.moth.animations.add('mothright', ['mothR5.png', 'mothR6.png'], 10, true, false);
+    this.moth.animations.add('mothsweatL', ['moth1L1_sweat.png', 'moth1L2_sweat.png', 'moth1L3_sweat.png', 'moth1L4_sweat.png'], 8, true, false);
+    this.moth.animations.add('mothsweatR', ['moth1R1_sweat.png', 'moth1R2_sweat.png', 'moth1R3_sweat.png', 'moth1R4_sweat.png'], 8, true, false);
+    this.moth.animations.add('mothloveL', ['mothLOVE_L1.png','mothLOVE_L2.png'], 8, true, false);
+    this.moth.animations.add('mothloveR', ['mothLOVE_R1.png','mothLOVE_R2.png'], 8, true, false);
+
     this.moth.animations.play('mothright');
 
     this.emitter = game.add.emitter(0, 0, 10);
@@ -66,10 +71,10 @@ Game.Play.prototype = {
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.moth.willpower = 23;
+    this.moth.willpower = 2;
     this.moth.isEating = false;
 
-    this.time.events.loop(Phaser.Timer.SECOND*20, this.toggleZapper, this);
+    this.time.events.loop(Phaser.Timer.SECOND*10, this.toggleZapper, this);
     this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*14, this.rugTimerHandler, this);
 
 
@@ -82,13 +87,11 @@ Game.Play.prototype = {
 
 
   update: function () {
-    console.log(this.rugG.health);
     this.text.setText('Willpower: '+this.moth.willpower);
 
     this.moth.bringToTop();
     this.checkIfEating();
     if(!this.rugG.health) {
-      console.log('here');
       this.rugB.visible = true;
     }
 
@@ -99,28 +102,44 @@ Game.Play.prototype = {
     if(this.isZapperOn) {
       this.rotateHypno();
     }
+
+    this.checkMothKill();
   },
 
 
   setMothMovement: function() {
-    if(this.cursors.left.isDown) {
-      this.moth.animations.play('mothleft');
-      this.moth.body.acceleration.x = -this.ACCELERATION * this.zapperPull;
+    if(this.isZapperOn && this.moth.willpower === 0) {
+      if(this.moth.body.x < (this.world.width / 2)-50) { //
+        this.moth.animations.play('mothloveR');
+        this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
+      }
+      else {
+        this.moth.animations.play('mothloveL');
+        this.moth.body.acceleration.x = -this.ACCELERATION * this.zapperPull;
+      }
+      this.moth.body.acceleration.y = 0;
+      this.moth.body.gravity.y = -100;
     }
-    else if(this.cursors.right.isDown) {
-      this.moth.animations.play('mothright');
-      this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
-    }
-    else if(this.cursors.up.isDown) {
-      this.setUpwardsAcceleration();
-    }
-    else if(this.cursors.down.isDown) {
-      this.setDownwardsAcceleration();
-    }
-    else {
-      this.moth.body.acceleration.x = this.zapperGravityX;
-      this.moth.body.acceleration.y = 10;
-      this.moth.body.gravity.y = this.zapperGravityY;
+    else{
+      if(this.cursors.left.isDown) {
+        this.moth.animations.play('mothleft');
+        this.moth.body.acceleration.x = -this.ACCELERATION * this.zapperPull;
+      }
+      else if(this.cursors.right.isDown) {
+        this.moth.animations.play('mothright');
+        this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
+      }
+      else if(this.cursors.up.isDown) {
+        this.setUpwardsAcceleration();
+      }
+      else if(this.cursors.down.isDown) {
+        this.setDownwardsAcceleration();
+      }
+      else {
+        this.moth.body.acceleration.x = this.zapperGravityX;
+        this.moth.body.acceleration.y = 10;
+        this.moth.body.gravity.y = this.zapperGravityY;
+      }
     }
 
   },
@@ -162,7 +181,7 @@ Game.Play.prototype = {
 
 
   toggleZapper: function () {
-    this.moth.willpower--;
+    this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
     this.text.setText('Willpower: '+this.moth.willpower);
     this.isZapperOn = !this.isZapperOn;
     this.lighting.setAll('visible',this.isZapperOn);
@@ -274,6 +293,16 @@ Game.Play.prototype = {
   rotateHypno: function () {
     if(this.hypno.visible) {
       this.hypno.rotation += 0.005;
+    }
+  },
+
+
+  checkMothKill: function() {
+    if(this.isZapperOn) {
+      var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
+      if(dist < 70) {
+        this.game.state.start('killmoth');
+      }
     }
   }
 
