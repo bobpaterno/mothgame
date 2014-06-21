@@ -34,9 +34,10 @@ Food.prototype.eatFood = function(moth,rug) {
       rug.damage(1);
       moth.willpower++;
       moth.isEating = true;
+      if(!rug.alive) {
+        moth.totalRugsEaten++;
+      }
     }
-    // else {
-    //   rug.visible = false;
-    // }
   }
+
 };

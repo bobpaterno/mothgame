@@ -16,6 +16,7 @@ Game.Play = function() {
    this.zapperGravityX = 0;
    this.zapperGravityY= 50;
    this.pullStrength = 0.0001;
+   this.totalRugs = 1;
 };
 
 Game.Play.prototype = {
@@ -62,6 +63,8 @@ Game.Play.prototype = {
     this.moth.animations.add('mothloveR', ['mothLOVE_R1.png','mothLOVE_R2.png'], 8, true, false);
 
     this.moth.animations.play('mothright');
+    this.moth.totalRugsEaten = 0;
+
 
     this.emitter = game.add.emitter(0, 0, 10);
     this.emitter.makeParticles('rugPiece');
@@ -78,16 +81,21 @@ Game.Play.prototype = {
     this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*14, this.rugTimerHandler, this);
 
 
-    var style = { font: '18px Arial', fill: '#ff0044', align: 'center' };
-    this.text = this.add.text(60, 20, 'Willpower: '+this.moth.willpower, style);
+    var style = { font: '16px Courier', fill: '#aaffff', align: 'left' };
+    this.txtWillpower = this.add.text(10, 20, 'Willpower:  '+this.moth.willpower, style);
+    this.txtRugsEaten = this.add.text(10, 40, 'Rugs:       '+this.moth.totalRugsEaten, style);
+    this.txtTotalRugs = this.add.text(10, 60, 'Total Rugs: '+this.totalRugs, style);
 
-    this.text.anchor.set(0.5);
+    this.txtWillpower.anchor.set(0);
+    this.txtRugsEaten.anchor.set(0);
 
   },
 
 
   update: function () {
-    this.text.setText('Willpower: '+this.moth.willpower);
+    this.txtWillpower.setText('Willpower:  '+this.moth.willpower);
+    this.txtTotalRugs.setText('Total Rugs: '+this.totalRugs);
+    this.txtRugsEaten.setText('Rugs:       '+this.moth.totalRugsEaten);
 
     this.moth.bringToTop();
     this.checkIfEating();
@@ -182,7 +190,7 @@ Game.Play.prototype = {
 
   toggleZapper: function () {
     this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
-    this.text.setText('Willpower: '+this.moth.willpower);
+    this.txtWillpower.setText('Willpower: '+this.moth.willpower);
     this.isZapperOn = !this.isZapperOn;
     this.lighting.setAll('visible',this.isZapperOn);
     if(this.moth.willpower < this.WPWARN && this.isZapperOn) {
@@ -262,6 +270,7 @@ Game.Play.prototype = {
 
 
   rugTimerHandler: function() {
+    this.totalRugs++;
     var obj = this.randXY(650,500);
     this.rugB.resetFood(obj.x, obj.y);
     this.rugG.resetFood(obj.x, obj.y);
