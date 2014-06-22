@@ -27,7 +27,7 @@ Food.prototype.resetFood = function(x,y) {
 };
 
 Food.prototype.eatFood = function(moth,rug) {
-  rug.count = rug.count % 59;  // reset every 60 times we hit this function
+  rug.count = rug.count % 29;  // reset every 60 times we hit this function
   rug.count++;
   if(rug.count === 1) {
     if(rug.health) {

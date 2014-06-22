@@ -1,4 +1,4 @@
-/* global game, Game, Phaser, Food */
+/* global game, Game, Phaser, Food, _ */
 'use strict';
 
 
@@ -74,10 +74,10 @@ Game.Play.prototype = {
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.moth.willpower = 2;
+    this.moth.willpower = 30;
     this.moth.isEating = false;
 
-    this.time.events.loop(Phaser.Timer.SECOND*10, this.toggleZapper, this);
+    this.zaptimer = this.time.events.loop(Phaser.Timer.SECOND*10, this.toggleZapper, this);
     this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*14, this.rugTimerHandler, this);
 
 
@@ -90,12 +90,25 @@ Game.Play.prototype = {
     this.txtRugsEaten.anchor.set(0);
 
     this.mothPretty = this.game.add.sound('aud_mothPretty');
-    this.mothPretty.volume = 0.5;
+    this.mothPretty.volume = 0.3;
+    this.mothTheLight = this.game.add.sound('aud_thelight');
+    this.mothTheLight.volume = 0.5;
+
+    this.mothMusic = game.add.audio('aud_music');
+    this.mothMusic.addMarker('musicLoop', 0, 48.07);
+    this.mothMusic.addMarker('musicEnd', 48.07, 5.9);
+    this.mothMusic.volume = 0.5;
+    this.mothMusic.play('musicLoop', 0,0.5,true);
+
+
+    this.drainWillpower = _.throttle(this.doWillpowerDrain, 250+Math.floor(250*this.zapperPull));
+
 
   },
 
 
   update: function () {
+
     this.txtWillpower.setText('Willpower:  '+this.moth.willpower);
     this.txtTotalRugs.setText('Total Rugs: '+this.totalRugs);
     this.txtRugsEaten.setText('Rugs:       '+this.moth.totalRugsEaten);
@@ -113,7 +126,7 @@ Game.Play.prototype = {
     if(this.isZapperOn) {
       this.rotateHypno();
     }
-
+    this.drainWillpower();
     this.checkMothKill();
   },
 
@@ -136,11 +149,13 @@ Game.Play.prototype = {
     }
     else{
       if(this.cursors.left.isDown) {
-        this.moth.animations.play('mothleft');
+        this.setMothAnimation(true);
+        // this.moth.animations.play('mothleft');
         this.moth.body.acceleration.x = -this.ACCELERATION * this.zapperPull;
       }
       else if(this.cursors.right.isDown) {
-        this.moth.animations.play('mothright');
+        this.setMothAnimation(false);
+        // this.moth.animations.play('mothright');
         this.moth.body.acceleration.x = this.ACCELERATION * this.zapperPull;
       }
       else if(this.cursors.up.isDown) {
@@ -194,7 +209,7 @@ Game.Play.prototype = {
   },
 
 
-  toggleZapper: function () {
+  toggleZapper: function () {  // timer event for bug zapper on / off
     this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
     this.txtWillpower.setText('Willpower: '+this.moth.willpower);
     this.isZapperOn = !this.isZapperOn;
@@ -205,6 +220,8 @@ Game.Play.prototype = {
     else {
       this.hypno.visible = false;
     }
+    // readjust delay - between 6 and 12 seconds
+    this.zaptimer.delay = Phaser.Timer.SECOND*6 + Math.floor(Math.random()*Phaser.Timer.SECOND*6);
   },
 
 
@@ -305,9 +322,30 @@ Game.Play.prototype = {
   },
 
 
+  setMothAnimation: function(isLeft) {
+    var animation;
+    if(isLeft) {
+      animation = this.isZapperOn ? 'mothsweatL' : 'mothleft';
+    }
+    else {
+      animation = this.isZapperOn ? 'mothsweatR' : 'mothright';
+    }
+    this.moth.animations.play(animation);
+
+  },
+
+
   rotateHypno: function () {
     if(this.hypno.visible) {
       this.hypno.rotation += 0.005;
+    }
+  },
+
+
+  doWillpowerDrain: function() {
+    var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
+    if(this.isZapperOn && dist < this.PULL_RADIUS) {
+      this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
     }
   },
 
@@ -316,6 +354,10 @@ Game.Play.prototype = {
     if(this.isZapperOn) {
       var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
       if(dist < 70) {
+        for(var i =0; i<100000; i++){
+          this.mothMusic.volume *= 0.999;
+        }
+        this.mothMusic.stop();
         this.game.state.start('killmoth');
       }
     }

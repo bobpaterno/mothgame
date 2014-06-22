@@ -14,6 +14,11 @@ Game.Killmoth.prototype = {
     this.zapFlash = this.add.sprite(405,50,'bugzap');
     this.zapFlash.animations.add('zzzt', ['zapFlash2.png', 'zapFlash1.png', 'zapFlash3.png'], 3, false, false);
 
+    this.zztSound = this.game.add.sound('aud_zzt');
+    this.zztSound.volume = 0.5;
+    this.zztSound.play();
+
+
     this.time.events.loop(Phaser.Timer.SECOND*3, this.doRestart, this);
 
   },

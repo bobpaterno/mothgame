@@ -19,11 +19,15 @@ Game.Load.prototype = {
     this.load.image('rugGood', 'img/rugGOOD.png');
     this.load.image('rugPiece', 'img/rugPiece.png');
 
-
     this.load.atlasJSONHash('moth', 'img/moth_animations.png', 'img/moth_animations.json');
     this.load.atlasJSONHash('bugzap', 'img/zapFlash.png', 'img/zapFlash.json');
 
     this.load.audio('aud_mothPretty', 'audios/pretty.mp3');
+    this.load.audio('aud_thelight', 'audios/thelight.mp3');
+    this.load.audio('aud_music', 'audios/music.mp3');
+    this.load.audio('aud_zzt', 'audios/zzt.mp3');
+
+
   },
 
   create: function () {
