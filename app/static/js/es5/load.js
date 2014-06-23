@@ -28,7 +28,7 @@ Game.Load.prototype = {
     this.load.audio('aud_musicintro', 'audios/gameintro.mp3');
     this.load.audio('aud_zzt1', 'audios/zzt.mp3');
     this.load.audio('aud_zzt2', 'audios/zzt2.mp3');
-    this.load.audio('aud_zapperOn', 'audios/zapperOn.mp3');
+    this.load.audio('aud_zapperHum', 'audios/zapperOn.mp3');
 
 
   },
@@ -36,7 +36,7 @@ Game.Load.prototype = {
   create: function () {
     this.add.sprite(0,0, 'background');
     this.add.sprite(0,0, 'splash');
-    this.time.events.add(Phaser.Timer.SECOND * 2, this.setReady, this);
+    this.time.events.add(Phaser.Timer.SECOND * 3, this.setReady, this);
   },
 
   setReady: function() {

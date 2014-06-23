@@ -17,6 +17,7 @@ Game.Play = function() {
    this.zapperGravityY= 50;
    this.pullStrength = 0.0001;
    this.totalRugs = 1;
+   this.INITIAL_WILLPOWER = 30;
 };
 
 Game.Play.prototype = {
@@ -46,7 +47,7 @@ Game.Play.prototype = {
     this.rugB.x = this.rugG.x;
     this.rugB.y = this.rugG.y;
 
-    // Render moth
+    // Render and initialize moth
     this.moth = this.game.add.sprite(200,300,'moth');
     this.game.physics.enable(this.moth, Phaser.Physics.ARCADE);
     this.game.physics.arcade.enableBody(this.moth);
@@ -64,8 +65,11 @@ Game.Play.prototype = {
 
     this.moth.animations.play('mothright');
     this.moth.totalRugsEaten = 0;
+    this.moth.willpower = this.INITIAL_WILLPOWER;
+    this.moth.isEating = false;
 
 
+    // Rug pieces emitter
     this.emitter = game.add.emitter(0, 0, 10);
     this.emitter.makeParticles('rugPiece');
     this.emitter.gravity = 200;
@@ -74,8 +78,6 @@ Game.Play.prototype = {
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.moth.willpower = 30;
-    this.moth.isEating = false;
 
     this.zaptimer = this.time.events.loop(Phaser.Timer.SECOND*10, this.toggleZapper, this);
     this.rugTimer = this.time.events.loop(Phaser.Timer.SECOND*14, this.rugTimerHandler, this);
@@ -89,6 +91,10 @@ Game.Play.prototype = {
     this.txtWillpower.anchor.set(0);
     this.txtRugsEaten.anchor.set(0);
 
+    this.drainWillpower = _.throttle(this.doWillpowerDrain, 250+Math.floor(250*this.zapperPull));
+
+
+    // Add audio
     this.mothPretty = this.game.add.sound('aud_mothPretty');
     this.mothPretty.volume = 0.2;
     this.mothTheLight = this.game.add.sound('aud_thelight');
@@ -99,9 +105,8 @@ Game.Play.prototype = {
     this.mothMusic.addMarker('musicEnd', 48.07, 5.9);
     this.mothMusic.volume = 0.5;
     this.mothMusic.play('musicLoop', 0,0.5,true);
+    this.zapHum = this.game.add.audio('aud_zapperHum');
 
-
-    this.drainWillpower = _.throttle(this.doWillpowerDrain, 250+Math.floor(250*this.zapperPull));
 
 
   },
@@ -210,6 +215,13 @@ Game.Play.prototype = {
 
 
   toggleZapper: function () {  // timer event for bug zapper on / off
+    if(this.zapHum.isPlaying) {
+      this.zapHum.stop();
+    }
+    else{
+      this.zapHum.play('',0,0.7,true);
+    }
+
     this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
     this.txtWillpower.setText('Willpower: '+this.moth.willpower);
     this.isZapperOn = !this.isZapperOn;
@@ -358,6 +370,8 @@ Game.Play.prototype = {
           this.mothMusic.volume *= 0.999;
         }
         this.mothMusic.stop();
+        this.zapHum.stop();
+
         this.game.state.start('killmoth');
       }
     }
