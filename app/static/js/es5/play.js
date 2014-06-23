@@ -90,7 +90,7 @@ Game.Play.prototype = {
     this.txtRugsEaten.anchor.set(0);
 
     this.mothPretty = this.game.add.sound('aud_mothPretty');
-    this.mothPretty.volume = 0.3;
+    this.mothPretty.volume = 0.2;
     this.mothTheLight = this.game.add.sound('aud_thelight');
     this.mothTheLight.volume = 0.5;
 

@@ -18,6 +18,11 @@ Game.Menu.prototype = {
     this.lighting.setAll('alpha',0);
     this.add.image(0,300, 'instructions');
 
+    this.intromusic = this.game.add.sound('aud_musicintro');
+    this.intromusic.volume = 0.3;
+    this.intromusic.play();
+
+
     this.time.events.loop(Phaser.Timer.SECOND*1.5, this.doZap, this);
 
   },
@@ -26,6 +31,8 @@ Game.Menu.prototype = {
   update: function() {
     // Wait for player click to proceed to game
     if(this.game.input.activePointer.justPressed()) {
+      this.intromusic.stop();
+
       this.game.state.start('play');
     }
 

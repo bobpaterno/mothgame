@@ -25,7 +25,10 @@ Game.Load.prototype = {
     this.load.audio('aud_mothPretty', 'audios/pretty.mp3');
     this.load.audio('aud_thelight', 'audios/thelight.mp3');
     this.load.audio('aud_music', 'audios/music.mp3');
-    this.load.audio('aud_zzt', 'audios/zzt.mp3');
+    this.load.audio('aud_musicintro', 'audios/gameintro.mp3');
+    this.load.audio('aud_zzt1', 'audios/zzt.mp3');
+    this.load.audio('aud_zzt2', 'audios/zzt2.mp3');
+    this.load.audio('aud_zapperOn', 'audios/zapperOn.mp3');
 
 
   },

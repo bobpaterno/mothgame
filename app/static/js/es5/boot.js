@@ -10,7 +10,7 @@ Game.Boot = function() {
 Game.Boot.prototype = {
   preload: function () {
     this.game.input.maxPointers = 1;
-  	this.load.image('background', 'img/background.png');
+  	this.load.image('background', 'img/background3.png');
     this.load.image('splash', 'img/splash.png');
   },
 
