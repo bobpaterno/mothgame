@@ -16,7 +16,6 @@ Game.Play = function() {
    this.zapperGravityX = 0;
    this.zapperGravityY= 50;
    this.pullStrength = 0.0001;
-   this.totalRugs = 1;
    this.INITIAL_WILLPOWER = 30;
 };
 
@@ -65,6 +64,7 @@ Game.Play.prototype = {
 
     this.moth.animations.play('mothright');
     this.moth.totalRugsEaten = 0;
+    this.totalRugs = 1;
     this.moth.willpower = this.INITIAL_WILLPOWER;
     this.moth.isEating = false;
 
@@ -91,7 +91,7 @@ Game.Play.prototype = {
     this.txtWillpower.anchor.set(0);
     this.txtRugsEaten.anchor.set(0);
 
-    this.drainWillpower = _.throttle(this.doWillpowerDrain, 250+Math.floor(250*this.zapperPull));
+    this.drainWillpower = _.throttle(this.doWillpowerDrain, 900+Math.floor(250*this.zapperPull));
 
 
     // Add audio
@@ -106,8 +106,6 @@ Game.Play.prototype = {
     this.mothMusic.volume = 0.5;
     this.mothMusic.play('musicLoop', 0,0.5,true);
     this.zapHum = this.game.add.audio('aud_zapperHum');
-
-
 
   },
 
@@ -234,6 +232,9 @@ Game.Play.prototype = {
     }
     // readjust delay - between 6 and 12 seconds
     this.zaptimer.delay = Phaser.Timer.SECOND*6 + Math.floor(Math.random()*Phaser.Timer.SECOND*6);
+    if(this.totalRugsEaten > 5) { // shave off a few seconds to make the game harder
+      this.zappertimer.delay -= Math.round(Math.random()*5)*Phaser.Timer.SECOND;
+    }
   },
 
 
@@ -357,6 +358,9 @@ Game.Play.prototype = {
   doWillpowerDrain: function() {
     var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
     if(this.isZapperOn && dist < this.PULL_RADIUS) {
+      this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-2;
+    }
+    else if(this.isZapperOn){
       this.moth.willpower = this.moth.willpower <= 0 ? 0 : this.moth.willpower-1;
     }
   },
