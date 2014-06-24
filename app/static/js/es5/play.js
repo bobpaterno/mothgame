@@ -16,7 +16,8 @@ Game.Play = function() {
    this.zapperGravityX = 0;
    this.zapperGravityY= 50;
    this.pullStrength = 0.0001;
-   this.INITIAL_WILLPOWER = 30;
+   this.INITIAL_WILLPOWER = 50;
+   this.isCheating = true;
 };
 
 Game.Play.prototype = {
@@ -77,6 +78,9 @@ Game.Play.prototype = {
 
     // Initialize cursor control
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.cheatkey= this.input.keyboard.addKey(Phaser.Keyboard.NINE);
+    this.cheatkey.onDown.add(this.cheating, this);
+
 
 
     this.zaptimer = this.time.events.loop(Phaser.Timer.SECOND*10, this.toggleZapper, this);
@@ -96,7 +100,7 @@ Game.Play.prototype = {
 
     // Add audio
     this.mothPretty = this.game.add.sound('aud_mothPretty');
-    this.mothPretty.volume = 0.2;
+    this.mothPretty.volume = 0.33;
     this.mothTheLight = this.game.add.sound('aud_thelight');
     this.mothTheLight.volume = 0.5;
 
@@ -131,6 +135,8 @@ Game.Play.prototype = {
     }
     this.drainWillpower();
     this.checkMothKill();
+    this.checkVictory();
+
   },
 
 
@@ -370,14 +376,37 @@ Game.Play.prototype = {
     if(this.isZapperOn) {
       var dist = this.physics.arcade.distanceBetween(this.moth, this.zapper);
       if(dist < 70) {
-        for(var i =0; i<100000; i++){
-          this.mothMusic.volume *= 0.999;
-        }
-        this.mothMusic.stop();
-        this.zapHum.stop();
-
+        this.prepExitPlayState();
         this.game.state.start('killmoth');
       }
+    }
+  },
+
+
+  checkVictory: function() {
+    if(this.moth.totalRugsEaten === 10) {
+      this.prepExitPlayState();
+      this.game.state.start('victory');
+    }
+  },
+
+
+  prepExitPlayState: function() {
+    for(var i =0; i<100000; i++){
+      this.mothMusic.volume *= 0.999;
+    }
+    this.mothMusic.stop();
+    this.zapHum.stop();
+
+    game.mothScore.totalEaten = this.moth.totalRugsEaten;
+    game.mothScore.totalRugs = this.totalRugs;
+
+  },
+
+
+  cheating: function() {
+    if(this.isCheating) {
+      this.moth.totalRugsEaten++;
     }
   }
 

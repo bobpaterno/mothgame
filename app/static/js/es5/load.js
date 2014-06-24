@@ -18,6 +18,8 @@ Game.Load.prototype = {
     this.load.image('rugBad', 'img/rugBAD.png');
     this.load.image('rugGood', 'img/rugGOOD.png');
     this.load.image('rugPiece', 'img/rugPiece.png');
+    this.load.spritesheet('victory', 'img/victory.png', 160,165,2);
+    this.load.spritesheet('defeat', 'img/defeat.png', 160,160,3);
 
     this.load.atlasJSONHash('moth', 'img/moth_animations.png', 'img/moth_animations.json');
     this.load.atlasJSONHash('bugzap', 'img/zapFlash.png', 'img/zapFlash.json');
@@ -29,6 +31,7 @@ Game.Load.prototype = {
     this.load.audio('aud_zzt1', 'audios/zzt.mp3');
     this.load.audio('aud_zzt2', 'audios/zzt2.mp3');
     this.load.audio('aud_zapperHum', 'audios/zapperOn.mp3');
+    this.load.audio('aud_victory', 'audios/victory.mp3');
 
 
   },
