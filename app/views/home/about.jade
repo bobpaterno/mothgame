@@ -1,0 +1,44 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title= title
+    link(href='/less/app.css', rel='stylesheet')
+  body
+    block content
+
+    #game-container
+      .lines
+        span robert paterno is a student at nashville software school
+      .lines
+        span leathersbees antique rugs is robert's first game
+      .lines
+        span he will graduate in september 2014
+      .lines
+        span feel free to hire him
+
+      //- #line1
+      //-   span this is a test
+
+    //- #game-container
+    //-   p robert paterno is a student at nashville software school
+    //-   p leathersbee's antique rugs is robert's first game
+    //-   p he will graduate in september 2014
+    //-   p feel free to hire him
+
+    #sidebar
+      ul
+        li: a(href='/') Home
+        li: a(href='https://github.com/bobpaterno/mothgame') Github Link
+        li: a(href='/about') About
+
+
+    script(src='/js/vendor/jquery-2.1.1.js')
+    script(src='/js/vendor/lodash-2.4.1.js')
+    script(src='/js/vendor/moment-2.6.0.js')
+    script(src='/js/vendor/traceur.js')
+    script(src='/js/vendor/phaser.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/es6/compiled/main.js')
+    script(src='/js/es6/compiled/sockets.js')
+    script(src='/js/es5/about.js')
