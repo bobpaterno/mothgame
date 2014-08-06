@@ -1,9 +1,10 @@
-Server Template
-===============
+# Leathersbee's Antiques - Phaser Game
 
-- Node.js
-- Express
-- MongoDB
-- Traceur
-- Jade
-- Less
+## Technologies
+  * Javascript
+  * jQuery
+  * Phaser Game Engine
+  * Node.js
+  * Jade
+  * Less
+
